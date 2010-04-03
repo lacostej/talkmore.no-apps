@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+# requires python-wxgtk2.8 on Debian/Ubuntu
+
 import httplib2
 from urllib import urlencode
 
@@ -197,7 +199,8 @@ class MyFrame(wx.Frame):
 		# FIXME async + status notification (sending... done)
 	
 		# FIXME support multiple recipients
-		self.tm.send_sms([self.recipientsCtrl.GetValue()], self.messageCtrl.GetValue())
+		to_numbers = re.findall(r'\w+', self.recipientsCtrl.GetValue())
+		self.tm.send_sms(, self.messageCtrl.GetValue())
 #		print "Fake sending..."
 
 	def OnMessageUpdated(self, event):
