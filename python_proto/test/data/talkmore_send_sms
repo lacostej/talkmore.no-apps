@@ -1,0 +1,62 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><!-- Mirrored from www.sigarett.com/clients/talkmore/om.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 16 Feb 2009 10:21:47 GMT --><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /><title>talkmore</title><link rel="shortcut icon" href="/talkmore3/images/favicon.ico" type="image/x-icon"/><link rel="stylesheet" href="/talkmore3/css/reset.css" type="text/css" /><link rel="stylesheet" href="/talkmore3/css/screen.css" type="text/css" /><link rel="stylesheet" href="/talkmore3/css/add/order.css" type="text/css" /><link rel="stylesheet" href="/talkmore3/css/legacy.css" type="text/css" /><script type="text/javascript" src="/talkmore3/js/rator.js"></script><script type="text/javascript" src="/talkmore3/js/talkmore.js"></script></head><body><div id="wrap"><div id="header" class="widecol"><a href="/talkmore3/index.html"><img src="/talkmore3/images/logo.gif" width="231" height="45" alt="Talkmore - for folk med mye p� hjertet." id="logo" /></a><ul id="menu"><li><a href="/talkmore3/servlet/Logout">Logg ut bruker</a></li></ul><!-- ul id="menu"><li><a href="index.html">Forside</a></li><li><a href="/talkmore3/servlet/BillingGroupInfo?uid=146368">Personlig info</a></li><li><a href="/talkmore3/servlet/Subscriptions?uid=146368">Abonnement</a></li><li><a href="/talkmore3/servlet/Refill?uid=146368">Fyll p� konto</a></li><li><a href="/talkmore3/servlet/Payments?uid=146368">Mine innbetalinger</a></li><li><a href="/talkmore3/servlet/BlockPhoneCheck?uid=146368&bg_index=0&sub_index=0">Sperr mitt abonnement</a></li><li><a href="/talkmore3/servlet/SendSmsFromSelfcare?uid=146368">Send SMS</a></li><li><a href="/talkmore3/servlet/DisplayBonus?uid=146368"> Tildelte pakker</a></li></ul--></div><div style="background-color: #e4e4e4; height: 17px" class="widecol"><a href="/talkmore3/servlet/BillingGroupInfo?uid=146368">Mitt abonnement</a> &nbsp; |&nbsp;
+			<a href="/talkmore3/servlet/OptionsOwner?uid=146368&bg_index=0&sub_index=0">Mine tjenester</a> &nbsp; |&nbsp;
+			<a href="/talkmore3/servlet/SubscriptionUsage?uid=146368&bg_index=0&sub_index=0">Mitt forbruk</a> &nbsp; |&nbsp;
+   			
+   			
+   				<a href="/talkmore3/servlet/Refill?uid=146368">Fyll opp ringekonto</a> &nbsp; |&nbsp;
+   				<a href="/talkmore3/servlet/Payments?uid=146368">Mine innbetalinger</a> &nbsp; |&nbsp;
+			
+			<a href="/talkmore3/servlet/SendSmsFromSelfcare?uid=146368">Send SMS</a> &nbsp; |&nbsp;
+			<a href="/talkmore3/servlet/BlockPhoneCheck?uid=146368&bg_index=0&sub_index=0">Sperr abonnement</a>&nbsp; |&nbsp;    					
+   			<a href="/talkmore3/servlet/RecruitingInfo?uid=146368">Verving</a></div><div id="content"><div class="widecol"><script language="JavaScript">
+
+canSendSms = true;
+
+function checkBeforeSubmit() {
+
+	document.sendSmsForm.list.value = ContactListFrame.getContacts();
+	document.sendSmsForm.message1.value = ContactListFrame.getMessage();
+	
+	if (document.sendSmsForm.list.value == "") {
+		alert('Du har glemt � skrive inn motaker(e)')
+		return false;
+	}
+	if (document.sendSmsForm.message1.value  == "") {
+		alert('Ingen melding - vennligst fyll ut melding.')
+		return false;
+	}
+	else {
+		//document.sendSmsForm.sendButton.disabled = true;
+		return true;
+	}
+}
+
+function sendSMS() {
+	if(checkBeforeSubmit() && canSendSms) {
+		canSendSms = false;
+		document.sendSmsForm.submit();
+	}
+}
+
+function fade(pause) {
+  setTimeout("moretext()",10000);
+}
+
+function moretext() {
+  document.getElementById("myrow1").style.visibility="hidden"
+}
+
+</script><form name="sendSmsForm" method="POST" action="/talkmore3/servlet/SendSmsFromSelfcare" onsubmit="return checkBeforeSubmit();"><input type="hidden" value="" name="message1" id="message1"><input type="hidden" value="" name="list" id="list"><h1>Send SMS direkte fra din PC</h1><p>
+Her kan du sende SMS til alle norske mobiltelefoner. Ditt mobilnummer (40867729) vil st&aring; som avsender, 
+og du kan lagre kontakter for senere bruk. Du betaler samme lave pris for SMS sendt fra web som fra din mobil.
+<p><hr></p><!-- 21/10/2008-EM  --><table border="0" width="560"><tr><td><div id="ContactListPanel"><iframe height="425" width="560" frameborder="0" scrolling="no" id="ContactListFrame" name="ContactListFrame"  src="/talkmore3/servlet/ManageContactList"></iframe></div></td></tr><tr align="left"><td colspan="2" align="left"><!-- input class="txtfbutton" id="sendButton" name="sendButton" type="Submit" name="Submit" value="Send"--><div class="button_green" style="width: 114px; float: left;margin-left: 130px"><a href="javascript:sendSMS();"title="Send SMS"><span>Send SMS</span></a></div></td></tr></table><table><script language="JavaScript">
+  			fade();
+  			</script><tr id="myrow1" style="visibility:visible"><td><b>Sendekvittering</b><br><div class="smsResOk"><p>Din SMS har blitt sendt. Det er en begrensning p&aring; maksimalt 1000 SMS per dag sendt fra Mine  sider. Du har sendt 2  SMS hittil i dag.
+  				    <!--klokka: hh:mm:ss--></p></div></td></tr></table></form></div><!-- End widecol --><!-- div id="sidebar"><div id="login"><h2>Logg inn Min Side</h2><div class="innerwrap"><h3>Logg inn Min Side</h3><form id="loginform" action="/talkmore3/servlet/Login"><input type="text" name="username" /><input type="password" name="password" /><a href="/talkmore3/servlet/PasswordForgotten">Glemt passord</a><input type="submit" class="submit" value=""/></form></div></div><img src="/talkmore3/images/sidebarcampaign1.jpg" width="245" height="355" class="campaign" alt="3000 min for bare 349kr per m�ned!"/><div class="minicampaign1"><a href="#"><span></span></a></div><div class="minicampaign2"><a href="#"><span></span></a></div></div--><!-- End sidebar --></div><!-- End content --><div id="footer"><!--<span id="info">Ny kunde og trenger hjelp til � bestille <a href="/Abonnement.html">abonnement</a>? Send en SMS med kodeord <b> TALKMORE</b> til <b>1960</b>, s� ringer vi deg. Skal du endre ditt abonnement? Ring oss p� <b>815 68 680.</b></span>  --></div><!-- End wrap --></div><!-- GOOGLE ANALYTICS --><script type="text/javascript">
+	var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+	document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+	</script><script type="text/javascript">
+	var pageTracker = _gat._getTracker("UA-4370218-1");
+	pageTracker._initData();
+	pageTracker._trackPageview();
+	</script><!-- GOOGLE ANALYTICS DONE --></body><!-- Mirrored from www.sigarett.com/clients/talkmore/om.html by HTTrack Website Copier/3.x [XR&CO'2008], Mon, 16 Feb 2009 10:21:47 GMT --></html>
