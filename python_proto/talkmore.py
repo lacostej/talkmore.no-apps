@@ -3,9 +3,9 @@
 import httplib2
 from urllib import urlencode
 
-from elementtidy.TidyHTMLTreeBuilder import TidyHTMLTreeBuilder as TB
+#from elementtidy.TidyHTMLTreeBuilder import TidyHTMLTreeBuilder as TB
+#import xml.etree.ElementTree as ET
 
-import xml.etree.ElementTree as ET
 import re
 
 class MyException(Exception):
@@ -88,7 +88,7 @@ def main():
 	print "Balance: " + str(tm.balance) + " NOK"
 	
 	# FIXME add a GUI ?
-	tm.send_sms(['xxxxxxxx', 'yyyyyyyy'], "my message")
+#	tm.send_sms(['xxxxxxxx', 'yyyyyyyy'], "my message")
 
 	tm.logout()
 	if not tm.is_logged_in():
