@@ -6,6 +6,9 @@ from urllib import urlencode
 #from elementtidy.TidyHTMLTreeBuilder import TidyHTMLTreeBuilder as TB
 #import xml.etree.ElementTree as ET
 
+from wx import *
+print "Usign wx " + wx.VERSION_STRING
+
 import re
 
 class MyException(Exception):
@@ -75,27 +78,146 @@ class Talkmore:
 		response, content = h.request('https://www.talkmore.no/talkmore3/servlet/Logout', 'GET', headers=headers)
 		self.cookie = None
 		self.user = None
+
+
+
+class MyFrame(wx.Frame):		
+	tm = Talkmore()
+
+	def __init__(self, parent, id, title):
+		wx.Frame.__init__(self, parent, id, title)
+
+		panel = wx.Panel(self, -1)
+		label1 = wx.StaticText(panel, -1, "Mobile:")
+		label2 = wx.StaticText(panel, -1, "Password:")
+		label3 = wx.StaticText(panel, -1, "Balance:")
 		
+		label4 = wx.StaticText(panel, -1, "Recipient(s):")
+		label5 = wx.StaticText(panel, -1, "Message:")
+		label6 = wx.StaticText(panel, -1, "Nb chararacters:")
+		self.loginCtrl = wx.TextCtrl(panel, -1, "40867729")
+		self.passwordCtrl = wx.TextCtrl(panel, -1, "") # FIXME hide
+		self.balanceCtrl = wx.TextCtrl(panel, -1, "", style=wx.TE_READONLY)
+
+		self.login = wx.Button(panel, label="Login")
+		self.login.Bind(wx.EVT_BUTTON, self.OnLoginPressed)
+		self.updateInfo = wx.Button(panel, label="Update Info")
+		self.updateInfo.Bind(wx.EVT_BUTTON, self.OnUpdateInfoPressed)
+		
+		self.recipientsCtrl = wx.TextCtrl(panel, -1, "", size=[400, 25])
+		self.messageCtrl = wx.TextCtrl(panel, -1, "", size=[400, 100], style = wx.TE_MULTILINE | wx.TE_RICH)
+		self.messageCtrl.Bind(wx.EVT_KEY_DOWN, self.OnMessageUpdated)
+		self.counterCtrl = wx.TextCtrl(panel, -1, "", style=wx.TE_READONLY)
+
+		self.send = wx.Button(panel, label="Send")
+		self.send.Bind(wx.EVT_BUTTON, self.OnSendPressed)
+		self.logout = wx.Button(panel, label="Logout")
+		self.logout.Bind(wx.EVT_BUTTON, self.OnLogoutPressed)
+
+		self.updateInfo.Enable(False)
+		self.send.Enable(False)
+		self.logout.Enable(False)
+		
+		self.panel = panel
+		
+		sizer = wx.FlexGridSizer(6, 2, 6, 6)
+		sizer.Add(label1)
+		sizer.Add(self.loginCtrl)
+		sizer.Add(label2)
+		sizer.Add(self.passwordCtrl)
+		sizer.Add(label3)
+		sizer.Add(self.balanceCtrl)
+
+		sizer.Add(self.login)
+		sizer.Add(self.updateInfo)
+
+		sizer.Add(label4)
+		sizer.Add(self.recipientsCtrl)
+		sizer.Add(label5)
+		sizer.Add(self.messageCtrl)
+		sizer.Add(label6)
+		sizer.Add(self.counterCtrl)
+		sizer.Add(self.send)
+		sizer.Add(self.logout)
+		
+		border = wx.BoxSizer()
+		border.Add(sizer, 0, wx.ALL, 15)
+		panel.SetSizerAndFit(border)
+		self.Fit()
+	
+	def OnLoginPressed(self, event):
+		# FIXME async + status notification (sending... done)
+		self.LoginIfNecessary()
+	
+	def OnLogoutPressed(self, event):
+		# FIXME async + status notification (sending... done)
+		self.LogoutIfNecessary()
+		
+	def OnUpdateInfoPressed(self, event):
+		self.tm.update_balance()
+		self.UpdateBalance()
+	
+	def UpdateBalance(self):
+		print "Balance: " + str(self.tm.balance) + " NOK"
+		self.balanceCtrl.SetValue(str(self.tm.balance) + " NOK")
+		
+	def LoginIfNecessary(self):
+		if not self.tm.is_logged_in():
+			self.tm.login(self.loginCtrl.GetValue(), self.passwordCtrl.GetValue())
+
+			if self.tm.is_logged_in():
+				print "Logged in with user: " + str(self.tm.user)
+
+			self.loginCtrl.Enable(False)
+			self.passwordCtrl.Enable(False)
+
+			self.login.Enable(False)
+			self.updateInfo.Enable(True)
+			self.logout.Enable(True)
+			self.send.Enable(True)
+
+			self.UpdateBalance()
+
+	def LogoutIfNecessary(self):
+		if self.tm.is_logged_in():
+			self.tm.logout()
+
+			if not self.tm.is_logged_in():
+				print "Logged out"
+
+			self.loginCtrl.Enable(True)
+			self.passwordCtrl.Enable(True)
+
+			self.login.Enable(True)
+			self.updateInfo.Enable(False)
+			self.logout.Enable(False)
+			self.send.Enable(False)
+
+	def OnSendPressed(self, event):
+		# FIXME async + status notification (sending... done)
+	
+		# FIXME support multiple recipients
+		self.tm.send_sms([self.recipientsCtrl.GetValue()], self.messageCtrl.GetValue())
+#		print "Fake sending..."
+
+	def OnMessageUpdated(self, event):
+		self.counterCtrl.SetValue(str(len(self.messageCtrl.GetValue())) + " char(s)")
+		event.Skip()
+
+class TalkmoreApp(wx.App):
+    def OnInit(self):
+		frame = MyFrame(None, -1, "Talkmore Client")
+        
+		frame.Show(True)
+
+		self.SetTopWindow(frame)
+
+		# Return a success flag
+		return True	
 
 def main():
-	tm = Talkmore()
-	
-	tm.login('40867729', '0ojo')
-
-	if tm.is_logged_in():
-		print "Logged in with user: " + str(tm.user)
-
-	print "Balance: " + str(tm.balance) + " NOK"
-	
-	# FIXME add a GUI ?
-#	tm.send_sms(['xxxxxxxx', 'yyyyyyyy'], "my message")
-
-	tm.logout()
-	if not tm.is_logged_in():
-		print "Logged out"
-
-
+	app = TalkmoreApp(0)
+	app.MainLoop()
 
 if __name__ == "__main__":
-	
 	main()
