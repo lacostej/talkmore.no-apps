@@ -200,7 +200,7 @@ class MyFrame(wx.Frame):
 	
 		# FIXME support multiple recipients
 		to_numbers = re.findall(r'\w+', self.recipientsCtrl.GetValue())
-		self.tm.send_sms(, self.messageCtrl.GetValue())
+		self.tm.send_sms(to_numbers, self.messageCtrl.GetValue())
 #		print "Fake sending..."
 
 	def OnMessageUpdated(self, event):
