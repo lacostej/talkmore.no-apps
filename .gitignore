@@ -1,0 +1,3 @@
+standalone_py/nosetests.xml
+*.pyc
+.cache
