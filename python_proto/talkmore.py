@@ -5,10 +5,9 @@
 import httplib2
 from urllib import urlencode
 
-#from elementtidy.TidyHTMLTreeBuilder import TidyHTMLTreeBuilder as TB
-#import xml.etree.ElementTree as ET
+from wx.lib.delayedresult import startWorker
 
-from wx import *
+import wx
 print "Usign wx " + wx.VERSION_STRING
 
 import re
@@ -59,6 +58,8 @@ class Talkmore:
 		return self.balance
 		
 	def send_sms(self, to_numbers, message):
+		'''We support sending messages to multiple numbers. The first parameter is an array of Strings representing norwegian numbers.
+		   The second parameter should be the message, max 1600 characters (dixit talkmore web interface, I haven't tried it'''
 		if not self.is_logged_in():
 			raise MyException("Must be logged int to send SMS")
 
@@ -148,16 +149,30 @@ class MyFrame(wx.Frame):
 		self.Fit()
 	
 	def OnLoginPressed(self, event):
-		# FIXME async + status notification (sending... done)
 		self.LoginIfNecessary()
 	
 	def OnLogoutPressed(self, event):
-		# FIXME async + status notification (sending... done)
 		self.LogoutIfNecessary()
 		
 	def OnUpdateInfoPressed(self, event):
-		self.tm.update_balance()
+		self.updateInfo.Enable(False)
+		wx.BeginBusyCursor()
+		startWorker(self._updateBalanceConsumer, self._updateBalanceProducer)
+
+	def _updateBalanceConsumer(self, delayedResult):
+		if wx.IsBusy():
+			wx.EndBusyCursor()
+		self.updateInfo.Enable(True)
+		try:
+			result = delayedResult.get()
+		except Exception, exc:
+			print "Result for %s raised exception: %s" % ("Update Balance", exc)
+			return
+
 		self.UpdateBalance()
+
+	def _updateBalanceProducer(self):
+		self.tm.update_balance()
 	
 	def UpdateBalance(self):
 		print "Balance: " + str(self.tm.balance) + " NOK"
@@ -165,43 +180,82 @@ class MyFrame(wx.Frame):
 		
 	def LoginIfNecessary(self):
 		if not self.tm.is_logged_in():
-			self.tm.login(self.loginCtrl.GetValue(), self.passwordCtrl.GetValue())
-
-			if self.tm.is_logged_in():
-				print "Logged in with user: " + str(self.tm.user)
-
-			self.loginCtrl.Enable(False)
-			self.passwordCtrl.Enable(False)
-
 			self.login.Enable(False)
-			self.updateInfo.Enable(True)
-			self.logout.Enable(True)
-			self.send.Enable(True)
+			wx.BeginBusyCursor()
+			startWorker(self._loginConsumer, self._loginProducer)
 
-			self.UpdateBalance()
+	def _loginProducer(self):
+		print "Logging in..."
+		self.tm.login(self.loginCtrl.GetValue(), self.passwordCtrl.GetValue())
+		if self.tm.is_logged_in():
+			print "Logged in with user: " + str(self.tm.user)
+
+	def _loginConsumer(self, delayedResult):
+		if wx.IsBusy():
+			wx.EndBusyCursor()
+		try:
+			result = delayedResult.get()
+		except Exception, exc:
+			print "Result for %s raised exception: %s" % ("Login", exc)
+			self.login.Enable(True)
+			return
+
+		self.loginCtrl.Enable(False)
+		self.passwordCtrl.Enable(False)
+
+		self.updateInfo.Enable(True)
+		self.logout.Enable(True)
+		self.send.Enable(True)
+
+		self.UpdateBalance()
 
 	def LogoutIfNecessary(self):
 		if self.tm.is_logged_in():
-			self.tm.logout()
-
-			if not self.tm.is_logged_in():
-				print "Logged out"
-
-			self.loginCtrl.Enable(True)
-			self.passwordCtrl.Enable(True)
-
-			self.login.Enable(True)
-			self.updateInfo.Enable(False)
 			self.logout.Enable(False)
-			self.send.Enable(False)
+			wx.BeginBusyCursor()
+			startWorker(self._logoutConsumer, self._logoutProducer)
+
+	def _logoutProducer(self):
+		self.tm.logout()
+		if not self.tm.is_logged_in():
+			print "Logged out"
+
+	def _logoutConsumer(self, delayedResult):
+		if wx.IsBusy():
+			wx.EndBusyCursor()
+		try:
+			result = delayedResult.get()
+		except Exception, exc:
+			print "Result for %s raised exception: %s" % ("Logout", exc)
+			self.logout.Enable(True)
+			return
+
+		self.loginCtrl.Enable(True)
+		self.passwordCtrl.Enable(True)
+
+		self.login.Enable(True)
+		self.updateInfo.Enable(False)
+		self.send.Enable(False)
 
 	def OnSendPressed(self, event):
-		# FIXME async + status notification (sending... done)
-	
-		# FIXME support multiple recipients
+		startWorker(self._sendConsumer, self._sendProducer)
+
+	def _sendProducer(self):
+		self.send.Enable(False)
+		wx.BeginBusyCursor()
 		to_numbers = re.findall(r'\w+', self.recipientsCtrl.GetValue())
 		self.tm.send_sms(to_numbers, self.messageCtrl.GetValue())
 #		print "Fake sending..."
+
+	def _sendConsumer(self, delayedResult):
+		if wx.IsBusy():
+			wx.EndBusyCursor()
+		self.send.Enable(True)
+		try:
+			result = delayedResult.get()
+		except Exception, exc:
+			print "Result for %s raised exception: %s" % ("Send", exc)
+			return
 
 	def OnMessageUpdated(self, event):
 		self.counterCtrl.SetValue(str(len(self.messageCtrl.GetValue())) + " char(s)")
