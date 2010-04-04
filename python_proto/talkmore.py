@@ -99,7 +99,7 @@ class MyFrame(wx.Frame):
 		label5 = wx.StaticText(panel, -1, "Message:")
 		label6 = wx.StaticText(panel, -1, "Nb chararacters:")
 		self.loginCtrl = wx.TextCtrl(panel, -1, "40867729")
-		self.passwordCtrl = wx.TextCtrl(panel, -1, "") # FIXME hide
+		self.passwordCtrl = wx.TextCtrl(panel, -1, "", style=wx.TE_PASSWORD)
 		self.balanceCtrl = wx.TextCtrl(panel, -1, "", style=wx.TE_READONLY)
 
 		self.login = wx.Button(panel, label="Login")
