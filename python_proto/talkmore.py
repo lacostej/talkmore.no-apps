@@ -10,7 +10,10 @@ from wx.lib.delayedresult import startWorker
 import wx
 print "Usign wx " + wx.VERSION_STRING
 
+import os
+import base64
 import re
+#import pickle
 
 class MyException(Exception):
   def __init__(self, value):
@@ -82,13 +85,42 @@ class Talkmore:
 		self.cookie = None
 		self.user = None
 
+def get_profile_dir():
+	profile_dir = os.path.expanduser("~/.talkmore/")
+	if not os.path.exists(profile_dir):
+		os.mkdir(profile_dir)
+		# FIXME error check
+	return profile_dir
 
+def get_credentials():
+	'Return a tuple login,password or None if no credentials saved'
+	profile_dir = get_profile_dir()
+	f = open(os.path.join(profile_dir, "credentials"), "r")
+	login = f.readline().rstrip('\n')
+	password = base64.b64decode(f.readline().rstrip('\n'))
+	return login, password
+#	res = pickle.load(f)
+#	f.close()
+#	return res[0], base64.b64decode(res[1])
+
+def save_credentials(login, password):
+	'Save credentials into home file'
+	profile_dir = get_profile_dir()
+	f = open(os.path.join(profile_dir, "credentials"), "w")
+	#pickle.dump([login, base64.b64encode(password)], f)
+	f.write(login + "\n")
+	f.write(base64.b64encode(password) + "\n")
+	f.close()
 
 class MyFrame(wx.Frame):		
 	tm = Talkmore()
 
 	def __init__(self, parent, id, title):
 		wx.Frame.__init__(self, parent, id, title)
+
+		creds = get_credentials()
+		if creds is None:
+			creds = ["", ""]
 
 		panel = wx.Panel(self, -1)
 		label1 = wx.StaticText(panel, -1, "Mobile:")
@@ -98,8 +130,8 @@ class MyFrame(wx.Frame):
 		label4 = wx.StaticText(panel, -1, "Recipient(s):")
 		label5 = wx.StaticText(panel, -1, "Message:")
 		label6 = wx.StaticText(panel, -1, "Nb chararacters:")
-		self.loginCtrl = wx.TextCtrl(panel, -1, "40867729")
-		self.passwordCtrl = wx.TextCtrl(panel, -1, "", style=wx.TE_PASSWORD)
+		self.loginCtrl = wx.TextCtrl(panel, -1, creds[0])
+		self.passwordCtrl = wx.TextCtrl(panel, -1, creds[1], style=wx.TE_PASSWORD)
 		self.balanceCtrl = wx.TextCtrl(panel, -1, "", style=wx.TE_READONLY)
 
 		self.login = wx.Button(panel, label="Login")
@@ -186,9 +218,12 @@ class MyFrame(wx.Frame):
 
 	def _loginProducer(self):
 		print "Logging in..."
-		self.tm.login(self.loginCtrl.GetValue(), self.passwordCtrl.GetValue())
+		login = self.loginCtrl.GetValue()
+		password = self.passwordCtrl.GetValue()
+		self.tm.login(login, password)
 		if self.tm.is_logged_in():
 			print "Logged in with user: " + str(self.tm.user)
+			save_credentials(login, password)
 
 	def _loginConsumer(self, delayedResult):
 		if wx.IsBusy():
