@@ -39,9 +39,7 @@ def main():
                     sendMsg = False
             if (sendMsg == True):
                 print "Sending the SMS(s)..."
-                #tm.send_sms(['xxxxxxxx', 'yyyyyyyy'], "my message")
-                #tm.send_sms(telNbs, theMsg)
-                #tm.send_sms(telNbs, theMsg)
+                tm.send_sms(telNbs, theMsg)
                 print "SMS(s) sent!"
             if (raw_input("One more time (y/n)? ")) == "y":
                 continue
