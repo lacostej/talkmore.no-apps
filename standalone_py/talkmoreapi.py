@@ -90,7 +90,10 @@ def get_profile_dir():
 def get_credentials():
 	'Return a tuple login,password or None if no credentials saved'
 	profile_dir = get_profile_dir()
-	with open(os.path.join(profile_dir, "credentials"), "r") as f:
+	credentials_file = os.path.join(profile_dir, "credentials")
+	if not os.path.exists(credentials_file):
+		return None
+	with open(credentials_file, "r") as f:
 		login = f.readline().rstrip('\n')
 		password = base64.b64decode(f.readline().rstrip('\n'))
 		return login, password

@@ -7,15 +7,16 @@ def main():
     login = None
     pwd = None
 
-    login, pwd = get_credentials()
-    
-    if (len(login) == 0 or len(pwd) == 0):
-		print "You need to enter your login and password"
-		login = raw_input("Enter your login: ")
-		pwd = raw_input("Enter your password: ")
-		save_credentials(login,pwd)
-		login, pwd = get_credentials()
-    		
+    creds = get_credentials()
+
+    if creds is None:
+        print "You need to enter your login and password"
+        login = raw_input("Enter your login: ")
+        pwd = raw_input("Enter your password: ")
+        save_credentials(login,pwd)
+    else:
+        login, pwd = creds[0], creds[1]
+
     tm.login(login,pwd)
 
     if tm.is_logged_in():
