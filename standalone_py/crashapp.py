@@ -2,6 +2,8 @@
 
 # https://bugs.launchpad.net/ubuntu/+source/wxwidgets2.8/+bug/555592
 
+import os; print "My PID is:", os.getpid()
+
 import wx
 import wx.lib.delayedresult
 print "Usign wx " + wx.VERSION_STRING
@@ -19,7 +21,7 @@ class MyFrame(wx.Frame):
 
 		self.panel = panel
 		
-		sizer = wx.FlexGridSizer(6, 2, 6, 6)
+		sizer = wx.FlexGridSizer(1, 2, 6, 6)
 
 		sizer.Add(self.login)
 
@@ -34,6 +36,9 @@ class MyFrame(wx.Frame):
 #		self._updateStatus("Logging in...")
 
 	def _updateStatus(self, status):
+		wx.CallAfter(self._updateStatusML, status)
+
+	def _updateStatusML(self, status):
 		self.SetStatusText(status, 0)
 
 	def _loginProducer(self):
