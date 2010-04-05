@@ -7,7 +7,6 @@ from urllib import urlencode
 import os
 import base64
 import re
-#import pickle
 
 class MyException(Exception):
   def __init__(self, value):
@@ -93,15 +92,11 @@ def get_credentials():
 	login = f.readline().rstrip('\n')
 	password = base64.b64decode(f.readline().rstrip('\n'))
 	return login, password
-#	res = pickle.load(f)
-#	f.close()
-#	return res[0], base64.b64decode(res[1])
 
 def save_credentials(login, password):
 	'Save credentials into home file'
 	profile_dir = get_profile_dir()
 	f = open(os.path.join(profile_dir, "credentials"), "w")
-	#pickle.dump([login, base64.b64encode(password)], f)
 	f.write(login + "\n")
 	f.write(base64.b64encode(password) + "\n")
 	f.close()
