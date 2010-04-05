@@ -83,6 +83,8 @@ def get_profile_dir():
 	if not os.path.exists(profile_dir):
 		os.mkdir(profile_dir)
 		# FIXME error check
+	if not os.path.exists(profile_dir):
+		raise MyException("couldn't find/create " + str(profile_dir))
 	return profile_dir
 
 def get_credentials():
