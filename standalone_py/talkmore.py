@@ -90,7 +90,6 @@ class MyFrame(wx.Frame):
 		wx.CallAfter(self._updateStatusML, status)
 
 	def _updateStatusML(self, status):
-		self.SetStatusText(status, 0)
 		print status
 		self.SetStatusText(status, 0)
 
