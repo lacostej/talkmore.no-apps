@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+# https://bugs.launchpad.net/ubuntu/+source/wxwidgets2.8/+bug/555592
+
 import wx
 import wx.lib.delayedresult
 print "Usign wx " + wx.VERSION_STRING
