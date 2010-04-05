@@ -4,8 +4,7 @@ from talkmoreapi import *
 
 import getpass
 
-def main():
-    tm = Talkmore()
+def login(tm):
     login = None
     pwd = None
 
@@ -32,6 +31,10 @@ def main():
         creds = None
         print "Couldn't log in user " + login + ". Try again." + str(tm.is_logged_in())
 
+def main():
+    tm = Talkmore()
+
+    login(tm)
     print "Balance: " + str(tm.balance) + " NOK"
 
     while raw_input("Do you want to send an SMS (y/n)? ") == "y": # Looping in case the user wants to send SMSs several times
