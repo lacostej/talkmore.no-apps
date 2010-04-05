@@ -91,6 +91,7 @@ def get_credentials():
 	f = open(os.path.join(profile_dir, "credentials"), "r")
 	login = f.readline().rstrip('\n')
 	password = base64.b64decode(f.readline().rstrip('\n'))
+	f.close()
 	return login, password
 
 def save_credentials(login, password):
