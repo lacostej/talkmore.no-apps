@@ -88,16 +88,14 @@ def get_profile_dir():
 def get_credentials():
 	'Return a tuple login,password or None if no credentials saved'
 	profile_dir = get_profile_dir()
-	f = open(os.path.join(profile_dir, "credentials"), "r")
-	login = f.readline().rstrip('\n')
-	password = base64.b64decode(f.readline().rstrip('\n'))
-	f.close()
-	return login, password
+	with open(os.path.join(profile_dir, "credentials"), "r") as f:
+		login = f.readline().rstrip('\n')
+		password = base64.b64decode(f.readline().rstrip('\n'))
+		return login, password
 
 def save_credentials(login, password):
 	'Save credentials into home file'
 	profile_dir = get_profile_dir()
-	f = open(os.path.join(profile_dir, "credentials"), "w")
-	f.write(login + "\n")
-	f.write(base64.b64encode(password) + "\n")
-	f.close()
+	with open(os.path.join(profile_dir, "credentials"), "w") as f:
+		f.write(login + "\n")
+		f.write(base64.b64encode(password) + "\n")
