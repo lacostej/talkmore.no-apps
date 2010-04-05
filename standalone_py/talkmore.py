@@ -87,6 +87,10 @@ class MyFrame(wx.Frame):
 		wx.lib.delayedresult.startWorker(self._updateBalanceConsumer, self._updateBalanceProducer)
 
 	def _updateStatus(self, status):
+		wx.CallAfter(self._updateStatusML, status)
+
+	def _updateStatusML(self, status):
+		self.SetStatusText(status, 0)
 		print status
 		self.SetStatusText(status, 0)
 
