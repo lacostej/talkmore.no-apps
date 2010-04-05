@@ -8,19 +8,27 @@ def main():
     pwd = None
 
     creds = get_credentials()
+    while not tm.is_logged_in():
+        if creds is None:
+            print "You need to enter your login and password"
+            login = raw_input("Enter your login: ")
+            pwd = raw_input("Enter your password: ")
+            save_credentials(login,pwd)
+        else:
+            login, pwd = creds[0], creds[1]
 
-    if creds is None:
-        print "You need to enter your login and password"
-        login = raw_input("Enter your login: ")
-        pwd = raw_input("Enter your password: ")
-        save_credentials(login,pwd)
-    else:
-        login, pwd = creds[0], creds[1]
+        try:
+            print "Logging in..."
+            tm.login(login,pwd)
+            if tm.is_logged_in():
+                break
+        except Exception, exc:
+			# force overriding. Note we shouldn't do that when the error isn't invalid credentials. FIXME support invalid credentials detection in API
+            creds = None
 
-    tm.login(login,pwd)
-
-    if tm.is_logged_in():
-        print "Logged in with user: " + str(tm.user)
+        print "Couldn't log in user " + login + ". Try again"
+            
+    print "Logged in with user: " + str(tm.user)
 
     if (raw_input("Do you want your balance (y/n)? ")) == "y":
         print "Balance: " + str(tm.balance) + " NOK"
