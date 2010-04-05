@@ -22,7 +22,7 @@ def login(tm):
         except Exception, exc:
             print exc
 
-        # force overriding. Note we shouldn't do that when the error isn't invalid credentials. FIXME support invalid credentials detection in API
+        # force overriding. Note we shouldn't do that when the error isn't invalid credentials. FIXME detect invalid credentials from network issues
         creds = None
         print "Couldn't log in user " + login + ". Try again." + str(tm.is_logged_in())
 
@@ -63,4 +63,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
