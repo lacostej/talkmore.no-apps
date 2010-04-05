@@ -39,8 +39,9 @@ def main():
         theMsg = raw_input("Please write your message: ")
         telNbs = theNumbers.split(",") # splits the list of CSV into an array
         print "You are going to send an SMS to", telNbs, "with the message :\n", theMsg
-        if (len(theMsg) > 160): # Checkking if the message is longer than one SMS
-            print "Your message is",len(theMsg),"chars long which is more than one SMS (",len(theMsg)/160+1,"SMSs to be precise)"
+        nb_messages = len(theMsg)/160+1
+        if (nb_messages > 1):
+            print "Your message is",len(theMsg),"chars long which is more than one SMS (",nb_messages,"SMSs to be precise)"
             if (raw_input("Do you really want to send it (y/n)? ")) != "y":
                 print "Not sending the SMS..."
                 continue
@@ -48,6 +49,7 @@ def main():
         tm.send_sms(telNbs, theMsg)
         print "SMS(s) sent!"
 
+    print "Logging out"
     tm.logout()
     if not tm.is_logged_in():
         print "Logged out"
