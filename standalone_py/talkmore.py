@@ -20,14 +20,12 @@ class MyFrame(wx.Frame):
 		panel = wx.Panel(self, -1)
 		label1 = wx.StaticText(panel, -1, "Mobile:")
 		label2 = wx.StaticText(panel, -1, "Password:")
-		label3 = wx.StaticText(panel, -1, "Balance:")
 		
 		label4 = wx.StaticText(panel, -1, "Recipient(s):")
 		label5 = wx.StaticText(panel, -1, "Message:")
 		label6 = wx.StaticText(panel, -1, "Nb chararacters:")
 		self.loginCtrl = wx.TextCtrl(panel, -1, creds[0])
 		self.passwordCtrl = wx.TextCtrl(panel, -1, creds[1], style=wx.TE_PASSWORD)
-		self.balanceCtrl = wx.TextCtrl(panel, -1, "", style=wx.TE_READONLY)
 
 		self.login = wx.Button(panel, label="Login")
 		self.login.Bind(wx.EVT_BUTTON, self.OnLoginPressed)
@@ -48,7 +46,9 @@ class MyFrame(wx.Frame):
 		self.send.Enable(False)
 		self.logout.Enable(False)
 		
-		self.CreateStatusBar(1)
+		self.CreateStatusBar(3)
+		self.SetStatusWidths([-1, 70, 100])
+		self.SetStatusText("Balance:", 1)
 
 		self.panel = panel
 		
@@ -57,8 +57,6 @@ class MyFrame(wx.Frame):
 		sizer.Add(self.loginCtrl)
 		sizer.Add(label2)
 		sizer.Add(self.passwordCtrl)
-		sizer.Add(label3)
-		sizer.Add(self.balanceCtrl)
 
 		sizer.Add(self.login)
 		sizer.Add(self.updateInfo)
@@ -109,7 +107,7 @@ class MyFrame(wx.Frame):
 	
 	def UpdateBalance(self):
 		print "Balance: " + str(self.tm.balance) + " NOK"
-		self.balanceCtrl.SetValue(str(self.tm.balance) + " NOK")
+		self.SetStatusText(str(self.tm.balance) + " NOK", 2)
 		
 	def LoginIfNecessary(self):
 		if not self.tm.is_logged_in():
