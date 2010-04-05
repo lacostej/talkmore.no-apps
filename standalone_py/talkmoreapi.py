@@ -27,14 +27,15 @@ class Talkmore:
 		self.cookie = response['set-cookie']
 
 		self.update_balance()
-		self.user=login
-		# FIXME check logged in (e.g. find phone number on page + response code)
-		# check response - location +uid
-		# parse ringesaldo
+		if self.balance is None:
+			self.cookie = None
+			raise MyException("Couldn't log in and read balance")
+		else:
+			self.user = login
 
 	def update_balance(self):
 		if not self.is_logged_in():
-			raise MyException("Must be logged int to parse balance")
+			raise MyException("Must be logged in to parse balance")
 		self.balance = self.parse_balance_page('https://www.talkmore.no/talkmore3/servlet/SubscriptionUsage')
 
 	def parse_balance_page(self, url):
@@ -44,6 +45,8 @@ class Talkmore:
 		m = re.search('.*Ringesaldo:.* &nbsp;(.*)  kroner.*', content)
 		if response.status !=  200:
 			raise MyException("couldn't open " + url + " status " + str(response.status))
+		if m is None:
+			return None
 		return m.group(1)
 
 	def is_logged_in(self):

@@ -2,6 +2,8 @@
 
 from talkmoreapi import *
 
+import getpass
+
 def main():
     tm = Talkmore()
     login = None
@@ -12,7 +14,7 @@ def main():
         if creds is None:
             print "You need to enter your login and password"
             login = raw_input("Enter your login: ")
-            pwd = raw_input("Enter your password: ")
+            pwd = getpass.getpass("Enter your password: ")
             save_credentials(login,pwd)
         else:
             login, pwd = creds[0], creds[1]
@@ -21,14 +23,14 @@ def main():
             print "Logging in..."
             tm.login(login,pwd)
             if tm.is_logged_in():
+                print "Logged in with user: " + str(tm.user)
                 break
         except Exception, exc:
-			# force overriding. Note we shouldn't do that when the error isn't invalid credentials. FIXME support invalid credentials detection in API
-            creds = None
+            print exc
 
-        print "Couldn't log in user " + login + ". Try again"
-            
-    print "Logged in with user: " + str(tm.user)
+        # force overriding. Note we shouldn't do that when the error isn't invalid credentials. FIXME support invalid credentials detection in API
+        creds = None
+        print "Couldn't log in user " + login + ". Try again." + str(tm.is_logged_in())
 
     if (raw_input("Do you want your balance (y/n)? ")) == "y":
         print "Balance: " + str(tm.balance) + " NOK"
