@@ -48,6 +48,8 @@ class MyFrame(wx.Frame):
 		self.send.Enable(False)
 		self.logout.Enable(False)
 		
+		self.CreateStatusBar(1)
+
 		self.panel = panel
 		
 		sizer = wx.FlexGridSizer(6, 2, 6, 6)
@@ -86,6 +88,10 @@ class MyFrame(wx.Frame):
 		wx.BeginBusyCursor()
 		wx.lib.delayedresult.startWorker(self._updateBalanceConsumer, self._updateBalanceProducer)
 
+	def _updateStatus(self, status):
+		print status
+		self.SetStatusText(status, 0)
+
 	def _updateBalanceConsumer(self, delayedResult):
 		if wx.IsBusy():
 			wx.EndBusyCursor()
@@ -93,7 +99,7 @@ class MyFrame(wx.Frame):
 		try:
 			result = delayedResult.get()
 		except Exception, exc:
-			print "Result for %s raised exception: %s" % ("Update Balance", exc)
+			self._updateStatus("Result for %s raised exception: %s" % ("Update Balance", exc))
 			return
 
 		self.UpdateBalance()
@@ -112,12 +118,11 @@ class MyFrame(wx.Frame):
 			wx.lib.delayedresult.startWorker(self._loginConsumer, self._loginProducer)
 
 	def _loginProducer(self):
-		print "Logging in..."
+		self._updateStatus("Logging in...")
 		login = self.loginCtrl.GetValue()
 		password = self.passwordCtrl.GetValue()
 		self.tm.login(login, password)
 		if self.tm.is_logged_in():
-			print "Logged in with user: " + str(self.tm.user)
 			save_credentials(login, password)
 
 	def _loginConsumer(self, delayedResult):
@@ -126,9 +131,11 @@ class MyFrame(wx.Frame):
 		try:
 			result = delayedResult.get()
 		except Exception, exc:
-			print "Result for %s raised exception: %s" % ("Login", exc)
+			self._updateStatus("Result for %s raised exception: %s" % ("Login", exc))
 			self.login.Enable(True)
 			return
+
+		self._updateStatus("Logged in with user: " + str(self.tm.user))
 
 		self.loginCtrl.Enable(False)
 		self.passwordCtrl.Enable(False)
@@ -148,7 +155,7 @@ class MyFrame(wx.Frame):
 	def _logoutProducer(self):
 		self.tm.logout()
 		if not self.tm.is_logged_in():
-			print "Logged out"
+			self._updateStatus("Logged out")
 
 	def _logoutConsumer(self, delayedResult):
 		if wx.IsBusy():
@@ -156,7 +163,7 @@ class MyFrame(wx.Frame):
 		try:
 			result = delayedResult.get()
 		except Exception, exc:
-			print "Result for %s raised exception: %s" % ("Logout", exc)
+			self._updateStatus("Result for %s raised exception: %s" % ("Logout", exc))
 			self.logout.Enable(True)
 			return
 
@@ -184,7 +191,7 @@ class MyFrame(wx.Frame):
 		try:
 			result = delayedResult.get()
 		except Exception, exc:
-			print "Result for %s raised exception: %s" % ("Send", exc)
+			self._updateStatus("Result for %s raised exception: %s" % ("Send", exc))
 			return
 
 	def OnMessageUpdated(self, event):
@@ -194,12 +201,8 @@ class MyFrame(wx.Frame):
 class TalkmoreApp(wx.App):
     def OnInit(self):
 		frame = MyFrame(None, -1, "Talkmore Client")
-        
 		frame.Show(True)
-
 		self.SetTopWindow(frame)
-
-		# Return a success flag
 		return True	
 
 def main():
