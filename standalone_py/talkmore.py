@@ -1,13 +1,12 @@
 #!/usr/bin/python
 
 # requires python-wxgtk2.8 on Debian/Ubuntu
-
 import httplib2
 from urllib import urlencode
 
-from wx.lib.delayedresult import startWorker
-
+# for some reason, some users have issues with from xx import yy style
 import wx
+import wx.lib.delayedresult
 print "Usign wx " + wx.VERSION_STRING
 
 import os
@@ -189,7 +188,7 @@ class MyFrame(wx.Frame):
 	def OnUpdateInfoPressed(self, event):
 		self.updateInfo.Enable(False)
 		wx.BeginBusyCursor()
-		startWorker(self._updateBalanceConsumer, self._updateBalanceProducer)
+		wx.lib.delayedresult.startWorker(self._updateBalanceConsumer, self._updateBalanceProducer)
 
 	def _updateBalanceConsumer(self, delayedResult):
 		if wx.IsBusy():
@@ -214,7 +213,7 @@ class MyFrame(wx.Frame):
 		if not self.tm.is_logged_in():
 			self.login.Enable(False)
 			wx.BeginBusyCursor()
-			startWorker(self._loginConsumer, self._loginProducer)
+			wx.lib.delayedresult.startWorker(self._loginConsumer, self._loginProducer)
 
 	def _loginProducer(self):
 		print "Logging in..."
@@ -248,7 +247,7 @@ class MyFrame(wx.Frame):
 		if self.tm.is_logged_in():
 			self.logout.Enable(False)
 			wx.BeginBusyCursor()
-			startWorker(self._logoutConsumer, self._logoutProducer)
+			wx.lib.delayedresult.startWorker(self._logoutConsumer, self._logoutProducer)
 
 	def _logoutProducer(self):
 		self.tm.logout()
@@ -273,7 +272,7 @@ class MyFrame(wx.Frame):
 		self.send.Enable(False)
 
 	def OnSendPressed(self, event):
-		startWorker(self._sendConsumer, self._sendProducer)
+		wx.lib.delayedresult.startWorker(self._sendConsumer, self._sendProducer)
 
 	def _sendProducer(self):
 		self.send.Enable(False)
