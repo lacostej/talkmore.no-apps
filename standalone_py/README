@@ -1,0 +1,2 @@
+This directory contains 2 programs allowing to perform the same operations: to access Talkmore's balance and send SMS from the desktop. One is GUI based, one is a command line version.
+Both will auto store the credentials under a ~/.talkmore/credentials file, so you might want to remove that file if you stop using the program.
