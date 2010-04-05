@@ -32,8 +32,7 @@ def main():
         creds = None
         print "Couldn't log in user " + login + ". Try again." + str(tm.is_logged_in())
 
-    if (raw_input("Do you want your balance (y/n)? ")) == "y":
-        print "Balance: " + str(tm.balance) + " NOK"
+    print "Balance: " + str(tm.balance) + " NOK"
 
     if (raw_input("Do you want to send an SMS (y/n)? ")) == "y":
         while 1: # Looping in case the user wants to send SMSs several times
