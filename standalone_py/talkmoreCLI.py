@@ -5,9 +5,6 @@ from talkmoreapi import *
 import getpass
 
 def login(tm):
-    login = None
-    pwd = None
-
     creds = get_credentials()
     while not tm.is_logged_in():
         if creds is None:
@@ -15,12 +12,10 @@ def login(tm):
             login = raw_input("Enter your login: ")
             pwd = getpass.getpass("Enter your password: ")
             save_credentials(login,pwd)
-        else:
-            login, pwd = creds[0], creds[1]
-
+            creds = login, pwd
         try:
             print "Logging in..."
-            tm.login(login,pwd)
+            tm.login(creds[0], creds[1])
             if tm.is_logged_in():
                 print "Logged in with user: " + str(tm.user)
                 break
