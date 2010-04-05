@@ -26,27 +26,22 @@ def login(tm):
         creds = None
         print "Couldn't log in user " + login + ". Try again." + str(tm.is_logged_in())
 
-def main():
-    tm = Talkmore()
+def send_sms(tm):
+    theNumbers = raw_input("Please enter the numbers. comma separated: ")
+    theMsg = raw_input("Please write your message: ")
+    telNbs = theNumbers.split(",") # splits the list of CSV into an array
+    print "You are going to send an SMS to", telNbs, "with the message :\n", theMsg
+    nb_messages = len(theMsg)/160+1
+    if (nb_messages > 1):
+        print "Your message is",len(theMsg),"chars long which is more than one SMS (",nb_messages,"SMSs to be precise)"
+        if (raw_input("Do you really want to send it (y/n)? ")) != "y":
+            print "Not sending the SMS..."
+            continue
+    print "Sending the SMS(s)..."
+    tm.send_sms(telNbs, theMsg)
+    print "SMS(s) sent!"
 
-    login(tm)
-    print "Balance: " + str(tm.balance) + " NOK"
-
-    while raw_input("Do you want to send an SMS (y/n)? ") == "y": # Looping in case the user wants to send SMSs several times
-        theNumbers = raw_input("Please enter the numbers. comma separated: ")
-        theMsg = raw_input("Please write your message: ")
-        telNbs = theNumbers.split(",") # splits the list of CSV into an array
-        print "You are going to send an SMS to", telNbs, "with the message :\n", theMsg
-        nb_messages = len(theMsg)/160+1
-        if (nb_messages > 1):
-            print "Your message is",len(theMsg),"chars long which is more than one SMS (",nb_messages,"SMSs to be precise)"
-            if (raw_input("Do you really want to send it (y/n)? ")) != "y":
-                print "Not sending the SMS..."
-                continue
-        print "Sending the SMS(s)..."
-        tm.send_sms(telNbs, theMsg)
-        print "SMS(s) sent!"
-
+def logout(tm):
     print "Logging out"
     tm.logout()
     if not tm.is_logged_in():
@@ -54,9 +49,18 @@ def main():
     else:
         print "Bye now :)"
 
+def main():
+    tm = Talkmore()
+
+    login(tm)
+    print "Balance: " + str(tm.balance) + " NOK"
+
+    while raw_input("Do you want to send an SMS (y/n)? ") == "y":
+        send_sms(tm)
+
+    logout(tm)
 
 
 if __name__ == "__main__":
-
     main()
 
